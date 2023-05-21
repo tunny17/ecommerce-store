@@ -6,31 +6,25 @@ import toast from 'react-hot-toast';
 
 import { useStateContext } from '../context/StateContext';
 import { urlFor } from '../lib/client';
-import getStripe from '../lib/getStripe';
+import { useRouter } from 'next/router';
+
 
 const Cart = () => {
   const cartRef = useRef();
   const { totalPrice, totalQuantities, cartItems, setShowCart, toggleCartItemQuantity, onRemove } = useStateContext();
 
-  const handleCheckout = async () => {
-    const stripe = await getStripe();
 
-    const response = await fetch('/api/stripe', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(cartItems),
-    });
+  const router = useRouter();
+  const checkoutLink = 'https://paystack.com/pay/ckqoaeykau';
 
-    if(response.statusCode === 500) return;
-    
-    const data = await response.json();
+  // Redirect the user to the checkout link
+  const redirectToCheckout = () => {
+    window.location.href = checkoutLink;
+  };
 
-    toast.loading('Redirecting...');
-
-    stripe.redirectToCheckout({ sessionId: data.id });
-  }
+  const handleCheckout = () => {
+    redirectToCheckout();    
+  };
 
   return (
     <div className="cart-wrapper" ref={cartRef}>
